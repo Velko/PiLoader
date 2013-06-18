@@ -1,0 +1,6 @@
+*~
+*.o
+piboot
+*.layout
+*.depend
+
