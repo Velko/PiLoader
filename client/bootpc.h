@@ -19,59 +19,20 @@
  * THE SOFTWARE.
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include "bootpc.h"
+#ifndef _BOOTPC_H_
+#define _BOOTPC_H_
 
-bool verbose_mode;
+#include <stdbool.h>
+#include <stdint.h>
 
-char out_buffer[256];
-char *out_ptr = out_buffer;
+void vm_fail(const char *format, ...);
+void vm_warn(const char *format, ...);
+void vm_print_s(const char *format, ...);
+void vm_print_e(bool force_output, const char *format, ...);
+uint32_t crc32(uint32_t crc, const void *buf, size_t size);
 
-void vm_print_s(const char *format, ...)
-{
-    va_list ap;
-    va_start(ap, format);
-    int nchr = vsprintf(out_ptr, format, ap);
-    if (verbose_mode) {
-        fputs(out_ptr, stderr);
-        fflush(stderr);
-    }
-    out_ptr += nchr;
-    va_end(ap);
-}
 
-void vm_print_e(bool force_output, const char *format, ...)
-{
-    va_list ap;
-    va_start(ap, format);
-    vsprintf(out_ptr, format, ap);
-    if (verbose_mode) {
-        fputs(out_ptr, stderr);
-        fflush(stderr);
-    } else if (force_output) {
-        fputs(out_buffer, stderr);
-        fflush(stderr);
-    }
-    va_end(ap);
-    out_ptr = out_buffer;
-}
+extern bool verbose_mode;
 
-void vm_fail(const char *format, ...)
-{
-    va_list ap;
-    va_start(ap, format);
-    vfprintf(stderr, format, ap);
-    va_end(ap);
-    exit(1);
-}
 
-void vm_warn(const char *format, ...)
-{
-    va_list ap;
-    va_start(ap, format);
-    vfprintf(stderr, format, ap);
-    va_end(ap);
-}
+#endif // _BOOTPC_H_

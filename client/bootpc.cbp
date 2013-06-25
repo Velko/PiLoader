@@ -41,6 +41,7 @@
 		<Unit filename="bootpc.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="bootpc.h" />
 		<Unit filename="verbose_print.c">
 			<Option compilerVar="CC" />
 		</Unit>

@@ -26,27 +26,19 @@
 #include <termios.h>
 #include <string.h>
 #include <getopt.h>
-#include <stdbool.h>
+#include "bootpc.h"
 #include "bootproto.h"
 
-uint32_t crc32(uint32_t crc, const void *buf, size_t size);
-void vm_print(const char *message);
-void vm_print_s(const char *format, ...);
-void vm_print_e(bool force_output, const char *format, ...);
 
 FILE *ufile;
 Elf32_Ehdr e_hdr;
 int ttyfd;
 FILE *ttyfs;
 
-extern bool verbose_mode;
-
 void fail_format()
 {
-    fprintf(stderr,
-            "File expected to be: ELF 32-bit LSB executable,\n"
+    vm_fail("File expected to be: ELF 32-bit LSB executable,\n"
             "ARM, version 1 (SYSV)\n");
-    exit(1);
 }
 
 
@@ -124,8 +116,7 @@ void load_section(Elf32_Shdr *shdr)
     struct bp_hdr phdr;
     void *sdata = malloc(shdr->sh_size);
     if (sdata == NULL) {
-        fprintf(stderr, "Out of memory or something.\n");
-        exit (1);
+        vm_fail("Out of memory or something.\n");
     }
     fseek(ufile, shdr->sh_offset, SEEK_SET);
     fread(sdata, shdr->sh_size, 1, ufile);
@@ -291,8 +282,7 @@ int main(int argc, char **argv)
 
     ufile = fopen(argv[optind], "rb");
     if (ufile == NULL) {
-        fprintf(stderr, "Can not open file %s\n", argv[optind]);
-        return 0;
+        vm_fail("Can not open file %s\n", argv[optind]);
     }
 
     fread(&e_hdr, sizeof(e_hdr), 1, ufile);
@@ -300,14 +290,12 @@ int main(int argc, char **argv)
     validate_elf();
 
     if (e_hdr.e_shentsize != sizeof(Elf32_Shdr)) {
-        fprintf(stderr, "TODO: implement different shentsize\n");
-        exit(1);
+        vm_fail("TODO: implement different shentsize\n");
     }
 
     ttyfd = open(port, O_RDWR | O_NOCTTY);
     if (ttyfd == -1) {
-        fprintf(stderr, "Can not open device %s\n", argv[2]);
-        exit(1);
+        vm_fail("Can not open device %s\n", argv[2]);
     }
 
     setup_serial();
@@ -316,8 +304,7 @@ int main(int argc, char **argv)
 
     Elf32_Shdr *sh_ents = malloc(e_hdr.e_shnum * sizeof(Elf32_Shdr));
     if (sh_ents == NULL) {
-        fprintf(stderr, "Out of memory or something\n");
-        exit(1);
+        vm_fail("Out of memory or something\n");
     }
 
     fseek(ufile, e_hdr.e_shoff, SEEK_SET);
@@ -338,7 +325,7 @@ int main(int argc, char **argv)
                     zero_section(sh_ents+si);
                 break;
             default:
-                fprintf(stderr, "Unknown section\n.");
+                vm_warn("Unknown section\n.");
             }
         }
     }
