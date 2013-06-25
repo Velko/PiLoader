@@ -30,11 +30,16 @@
 #include "bootproto.h"
 
 uint32_t crc32(uint32_t crc, const void *buf, size_t size);
+void vm_print(const char *message);
+void vm_print_s(const char *format, ...);
+void vm_print_e(bool force_output, const char *format, ...);
 
 FILE *ufile;
 Elf32_Ehdr e_hdr;
 int ttyfd;
 FILE *ttyfs;
+
+extern bool verbose_mode;
 
 void fail_format()
 {
@@ -78,19 +83,19 @@ void check_response()
     int res = fread(&rsp, sizeof(rsp), 1, ttyfs);
 
     if (res != 1) {
-        perror("Failed to receive\n");
+        vm_print_e(true, "Failed to receive\n");
         exit(1);
     }
 
     switch (rsp.code) {
     case BPR_ACK:
-        printf("OK\n");
+        vm_print_e(false, "OK\n");
         return;
     case BPR_ERR:
-        printf("ERR\n");
+        vm_print_e(true, "ERR\n");
         break;
     default:
-        printf("WTF\n");
+        vm_print_e(true, "Unknown response\n");
         break;
     }
     exit(1);
@@ -111,6 +116,7 @@ void usage()
     printf("    -p | --port <device>  use specified serial port to communicate\n");
     printf("    -b | --beef-bss       fill BSS section with 0xDEADBEEF instead of zeros\n");
     printf("    -m | --monitor        start monitoring uart output after loading\n");
+    printf("    -v | --verbose        display what actions are performed\n");
 }
 
 void load_section(Elf32_Shdr *shdr)
@@ -132,10 +138,7 @@ void load_section(Elf32_Shdr *shdr)
     write(ttyfd, &phdr, sizeof(phdr));
     write(ttyfd, sdata, shdr->sh_size);
 
-
-    printf("LOAD %08x %08x %08x...", phdr.address, shdr->sh_offset,
-	   phdr.size);
-    fflush(stdout);
+    vm_print_s("LOAD %08x %08x %08x...", phdr.address, shdr->sh_offset, phdr.size);
 
     free(sdata);
 
@@ -152,8 +155,7 @@ void zero_section(Elf32_Shdr *shdr)
 
     write(ttyfd, &phdr, sizeof(phdr));
 
-    printf("ZERO %08x          %08x...", phdr.address, phdr.size);
-    fflush(stdout);
+    vm_print_s("ZERO %08x          %08x...", phdr.address, phdr.size);
 
     check_response();
 }
@@ -169,8 +171,7 @@ void beef_section(Elf32_Shdr *shdr)
 
     write(ttyfd, &phdr, sizeof(phdr));
 
-    printf("BEEF %08x          %08x...", phdr.address, phdr.size);
-    fflush(stdout);
+    vm_print_s("BEEF %08x          %08x...", phdr.address, phdr.size);
 
     check_response();
 }
@@ -182,7 +183,7 @@ void exec_program()
     init_hdr(&phdr, BPT_EXEC);
     phdr.address = e_hdr.e_entry;
 
-    printf("EXEC %08x\n", phdr.address);
+    vm_print_e(false, "EXEC %08x\n", phdr.address);
 
     write(ttyfd, &phdr, sizeof(phdr));
 }
@@ -194,17 +195,16 @@ void ping()
 
     init_hdr(&phdr, BPT_PING);
 
-    printf("Contacting RasPi bootloader...");
-    fflush(stdout);
+    vm_print_s("Contacting RasPi bootloader...");
 
     write(ttyfd, &phdr, sizeof(phdr));
 
     fread(&rsp, sizeof(rsp), 1, ttyfs);
 
     if (rsp.code == BPR_RDY) {
-        printf("OK\n");
+        vm_print_e(false, "OK\n");
     } else {
-        printf("ERROR\n");
+        vm_print_e(true, "ERROR\n");
         exit(1);
     }
 }
@@ -234,6 +234,7 @@ struct option long_options[] = {
     {"monitor", no_argument, 0, 'm'},
     {"beef-bss", no_argument, 0, 'b'},
     {"port", required_argument, 0, 'p'},
+    {"verbose", no_argument, 0, 'v'},
     {0, 0, 0, 0}
 };
 
@@ -258,7 +259,7 @@ int main(int argc, char **argv)
     char *port = NULL;
 
     for (;;) {
-        c = getopt_long(argc, argv, "hmbp:", long_options, &option_index);
+        c = getopt_long(argc, argv, "hmvbp:", long_options, &option_index);
         if (c == -1)
             break;
 
@@ -274,6 +275,9 @@ int main(int argc, char **argv)
             break;
         case 'p':
             port = optarg;
+            break;
+        case 'v':
+            verbose_mode = true;
             break;
         default:
             abort();
@@ -334,7 +338,7 @@ int main(int argc, char **argv)
                     zero_section(sh_ents+si);
                 break;
             default:
-                printf("Unknown section\n.");
+                fprintf(stderr, "Unknown section\n.");
             }
         }
     }

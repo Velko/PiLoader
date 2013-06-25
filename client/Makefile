@@ -21,7 +21,7 @@
 
 CC=gcc
 LD=gcc
-OBJS=bootpc.o crc32.o
+OBJS=bootpc.o crc32.o verbose_print.o
 CFLAGS=-I../common
 
 all: piboot
