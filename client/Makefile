@@ -21,8 +21,13 @@
 
 CC=gcc
 LD=gcc
-OBJS=bootpc.o crc32.o verbose_print.o
+
+CFILES := $(wildcard *.c)
+COBJS := $(patsubst %.c,%.o,$(CFILES))
+EXTRAOBJS := crc32.o
 CFLAGS=-I../common
+
+OBJS=$(COBJS) $(EXTRAOBJS)
 
 all: piboot
 
