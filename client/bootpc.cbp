@@ -42,6 +42,21 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="bootpc.h" />
+		<Unit filename="bootproto.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="elf.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="monitor.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="options.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="serial.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="verbose_print.c">
 			<Option compilerVar="CC" />
 		</Unit>

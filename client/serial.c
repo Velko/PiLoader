@@ -19,41 +19,35 @@
  * THE SOFTWARE.
  */
 
-#ifndef _BOOTPC_H_
-#define _BOOTPC_H_
+#include "bootpc.h"
+#include <termios.h>
+#include <fcntl.h>
+#include <string.h>
 
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdio.h>
+int ttyfd;
+FILE *ttyfs;
+char *port;
+
+void setup_serial(const char *port)
+{
+    struct termios newtio;
+
+    ttyfd = open(port, O_RDWR | O_NOCTTY);
+    if (ttyfd == -1) {
+        vm_fail("Can not open device %s\n", port);
+    }
 
 
-void vm_fail(const char *format, ...);
-void vm_warn(const char *format, ...);
-void vm_print_s(const char *format, ...);
-void vm_print_e(bool force_output, const char *format, ...);
-uint32_t crc32(uint32_t crc, const void *buf, size_t size);
-void monitor();
+    memset(&newtio, 0, sizeof(newtio));
+    newtio.c_cflag = B115200 | CS8 | CLOCAL | CREAD;
+    newtio.c_iflag = IGNPAR;
+    newtio.c_oflag = 0;
+    newtio.c_lflag = 0;
+    newtio.c_cc[VTIME]    = 0;
+    newtio.c_cc[VMIN]     = 1;
 
-void ping();
-void load_section(uint32_t sh_addr, uint32_t sh_offset, uint32_t sh_size);
-void zero_section(uint32_t sh_addr, uint32_t sh_size);
-void beef_section(uint32_t sh_addr, uint32_t sh_size);
-void exec_program(uint32_t e_entry);
+    tcflush(ttyfd, TCIFLUSH);
+    tcsetattr(ttyfd,TCSANOW,&newtio);
 
-bool check_elf();
-void load_elf(uint32_t *entry_addr);
-
-void setup_serial(const char *port);
-
-void parse_cmdline(int argc, char **argv);
-
-extern bool verbose_mode;
-extern bool beef_bss;
-extern FILE *ttyfs;
-extern FILE *ufile;
-extern int ttyfd;
-extern FILE *ttyfs;
-extern bool run_monitor;
-extern char *port;
-
-#endif // _BOOTPC_H_
+    ttyfs = fdopen(ttyfd, "rb");
+}
