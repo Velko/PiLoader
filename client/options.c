@@ -29,19 +29,40 @@ struct option long_options[] = {
     {"beef-bss", no_argument, 0, 'b'},
     {"port", required_argument, 0, 'p'},
     {"verbose", no_argument, 0, 'v'},
+    {"load-addr", required_argument, 0, 'l'},
+    {"exec-addr", required_argument, 0, 'x'},
+    {"suspended", no_argument, 0, 's'},
     {0, 0, 0, 0}
 };
 
 static void usage()
 {
     printf("USAGE:\n");
-    printf("    piboot <options> <kernel.elf>\n");
+    printf("    piboot <options> <kernel>\n");
     printf("\n");
-    printf("    -h | --help           show this screen\n");
-    printf("    -p | --port <device>  use specified serial port to communicate\n");
-    printf("    -b | --beef-bss       fill BSS section with 0xDEADBEEF instead of zeros\n");
-    printf("    -m | --monitor        start monitoring uart output after loading\n");
-    printf("    -v | --verbose        display what actions are performed\n");
+    printf("    -h | --help             Show this screen.\n");
+    printf("    -p | --port <device>    Use specified serial port to communicate.\n");
+    printf("    -b | --beef-bss         Fill BSS section with 0xDEADBEEF instead of zeros.\n");
+    printf("    -m | --monitor          Start monitoring uart output after starting kernel\n");
+    printf("    -l | --load-addr <addr> Specify address where to load binary files.\n"
+           "       |                    Defaults to 0x8000, increases with each loaded file.\n"
+           "       |                    Has no effect when loading ELF files.\n");
+    printf("    -x | --exec-addr <addr> Address where to start executing. Defaults to\n"
+           "       |                    0x8000. When loading ELF, it's entrypoint address\n"
+           "       |                    is used instead.\n");
+    printf("    -s | --suspended        Do not start to execute right away.\n");
+    printf("    -v | --verbose          Display what actions are performed.\n");
+}
+
+uint32_t parse_addr(const char *s_addr)
+{
+    char *eptr;
+    unsigned long a2 = strtoul(s_addr, &eptr, 16);
+
+    if (*eptr != '\0')
+        vm_fail("Not a valid address: '%s'\n", s_addr);
+
+    return a2;
 }
 
 void parse_cmdline(int argc, char **argv)
@@ -50,7 +71,7 @@ void parse_cmdline(int argc, char **argv)
     int option_index = 0;
 
     for (;;) {
-        c = getopt_long(argc, argv, "hmvbp:", long_options, &option_index);
+        c = getopt_long(argc, argv, "hmvbp:l:x:s", long_options, &option_index);
         if (c == -1)
             break;
 
@@ -69,6 +90,15 @@ void parse_cmdline(int argc, char **argv)
             break;
         case 'v':
             verbose_mode = true;
+            break;
+        case 'l':
+            e_load = parse_addr(optarg);
+            break;
+        case 'x':
+            e_entry = parse_addr(optarg);
+            break;
+        case 's':
+            suspended = true;
             break;
         default:
             abort();

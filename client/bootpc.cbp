@@ -38,6 +38,9 @@
 		</Compiler>
 		<Unit filename=".gitignore" />
 		<Unit filename="Makefile" />
+		<Unit filename="binary_loader.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="bootpc.c">
 			<Option compilerVar="CC" />
 		</Unit>

@@ -19,45 +19,15 @@
  * THE SOFTWARE.
  */
 
-#ifndef _BOOTPC_H_
-#define _BOOTPC_H_
+#include "bootpc.h"
+#include <sys/stat.h>
 
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdio.h>
+void load_binary()
+{
+    struct stat st;
+    fstat(fileno(ufile), &st);
 
+    load_section(e_load, 0, st.st_size);
 
-void vm_fail(const char *format, ...);
-void vm_warn(const char *format, ...);
-void vm_print_s(const char *format, ...);
-void vm_print_e(bool force_output, const char *format, ...);
-uint32_t crc32(uint32_t crc, const void *buf, size_t size);
-void monitor();
-
-void ping();
-void load_section(uint32_t sh_addr, uint32_t sh_offset, uint32_t sh_size);
-void zero_section(uint32_t sh_addr, uint32_t sh_size);
-void beef_section(uint32_t sh_addr, uint32_t sh_size);
-void exec_program(uint32_t e_entry);
-
-bool check_elf();
-void load_elf(uint32_t *entry_addr);
-void load_binary();
-
-void setup_serial(const char *port);
-
-void parse_cmdline(int argc, char **argv);
-
-extern bool verbose_mode;
-extern bool beef_bss;
-extern FILE *ttyfs;
-extern FILE *ufile;
-extern int ttyfd;
-extern FILE *ttyfs;
-extern bool run_monitor;
-extern char *port;
-extern uint32_t e_entry;
-extern uint32_t e_load;
-extern bool suspended;
-
-#endif // _BOOTPC_H_
+    e_load += st.st_size;
+}

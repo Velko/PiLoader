@@ -25,11 +25,13 @@
 #include "bootproto.h"
 
 FILE *ufile;
-
+uint32_t e_entry = 0x8000;
+uint32_t e_load  = 0x8000;
+bool suspended;
 
 int main(int argc, char **argv)
 {
-    uint32_t e_entry = 0x8000;
+
 
     parse_cmdline(argc, argv);
 
@@ -47,12 +49,13 @@ int main(int argc, char **argv)
         if (check_elf())
             load_elf(&e_entry);
         else
-            vm_fail("TODO: only ELF loading implemented");
+            load_binary();
 
         fclose(ufile);
     }
 
-    exec_program(e_entry);
+    if (!suspended)
+        exec_program(e_entry);
 
     if (run_monitor)
         monitor();
