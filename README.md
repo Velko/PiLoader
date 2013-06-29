@@ -55,14 +55,57 @@ program is loaded, it instructs the server to jump to it.
 Features
 ========
 
-* Upon start relocates itself to ~60 MiB memory location, freeing up place where to load kernel.
-* Preserves boot register values (r0-r3), allowing loaded kernel to utilize information from ATags.
-* Loads kernels from ELF file format. 
+Relocates itself
+----------------
+RasPi firmware loads every kernel from SD card at address 0x8000 and then jumps to same address to start
+executing. *PiLoader's* server is no exception. Since this is a second stage bootloader, there's a problem:
+things it is meant to load most probably will also want to occupy the space starting from 0x8000. To solve
+this, the bootloader first relocates itself to ~60 MiB memory location.
+
+
+ATags and boot register values
+------------------------------
+ARM bootloader protocol specifies that registers r0-r2 contains some special values.
+
+* r0 - should be zero;
+* r1 - machine type. Could check if running on RasPi or different board;
+* r2 - pointer to ATags. A way to telling kernel few important things, like available memory amount;
+
+Since *PiLoader* means to be as transparent as possible, it preserves these values and passes them
+to kernels when jumping to them.
+
+Supported files
+----------------------
+*PiLoader* currently is able to load from plain binary and ELF formats.
+
+
+Debugging helpers
+-----------------
 * Supports "polluting" memory areas which normally should be zeroed, with 0xDEADBEEF. Useful to test
-  if kernel initializes it's memory correctly.
-* Monitor mode - reads and outputs anything that comes from serial line after kernel is started.
-* Initializes chip's watchdog. If not disabled by kernel, it will reboot the Raspi after ~16s.
-* When loaded kernel is done, it may restart the bootloader. Requires kernel's cooperation, however.
+  if kernel initializes it's memory correctly. Works only when loading ELF files.
+
+
+Monitor mode
+------------
+When kernel is started it will probably start to send some output back using UART. Monitor reads and 
+outputs anything that comes from serial line.
+
+
+Watchdog
+--------
+RasPi hardware contains a watchdog feature. Once enabled it will wait for certain amount of time
+(around 16 s) and then reboot the board. Very useful since we are going to load many untested things
+on to RasPi, and they will most likely hang. If not for watchdog, we would need to power cycle
+the RasPi then.
+
+If loaded kernel "knows what it is doing" it may disable the watchdog itself. Also there's a
+command-line option to do so.
+
+
+Reentry
+-------
+If the kernel is finished everything it intended, and if it did not ruin the memory location where
+bootloader is located it may simply jump back to the bootloader's entry point.
 
 
 Installation and usage
@@ -85,9 +128,7 @@ Enjoy!
 
 Planned features and updates
 ============================
-* Plain binary kernel support;
 * 2-way monitor;
 * Loading using ELF LMA addresses (instead of VMA);
-* Option to disable Watchdog;
 * More samples and documentation;
 * ...
