@@ -28,6 +28,7 @@ FILE *ufile;
 uint32_t e_entry = 0x8000;
 uint32_t e_load  = 0x8000;
 bool suspended;
+bool no_watchdog;
 
 int main(int argc, char **argv)
 {

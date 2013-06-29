@@ -59,5 +59,6 @@ extern char *port;
 extern uint32_t e_entry;
 extern uint32_t e_load;
 extern bool suspended;
+extern bool no_watchdog;
 
 #endif // _BOOTPC_H_

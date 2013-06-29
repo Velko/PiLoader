@@ -140,7 +140,10 @@ void exec_program(uint32_t e_entry)
     init_hdr(&phdr, BPT_EXEC);
     phdr.address = e_entry;
 
-    vm_print_e(false, "EXEC %08x\n", phdr.address);
+    if (no_watchdog)
+        phdr.flags |= BPF_NOWD;
+
+    vm_print_e(false, "EXEC %08x%s\n", phdr.address, (no_watchdog ? " nwd" : ""));
 
     write(ttyfd, &phdr, sizeof(phdr));
 }

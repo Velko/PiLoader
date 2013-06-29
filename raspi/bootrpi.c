@@ -64,7 +64,8 @@ void handle_beef(struct bp_hdr *hdr)
 
 void handle_exec(struct bp_hdr *hdr)
 {
-    wdog_start(0xFFFFF);
+    if ((hdr->flags & BPF_NOWD) == 0)
+        wdog_start(0xFFFFF);
     start_kernel(saved_r0, saved_r1, saved_r2, (void *)hdr->address);
 }
 

@@ -32,6 +32,7 @@ struct option long_options[] = {
     {"load-addr", required_argument, 0, 'l'},
     {"exec-addr", required_argument, 0, 'x'},
     {"suspended", no_argument, 0, 's'},
+    {"no-watchdog", no_argument, 0, 'w'},
     {0, 0, 0, 0}
 };
 
@@ -51,6 +52,7 @@ static void usage()
            "       |                    0x8000. When loading ELF, it's entrypoint address\n"
            "       |                    is used instead.\n");
     printf("    -s | --suspended        Do not start to execute right away.\n");
+    printf("    -w | --no-watchdog      Disable watchdog.\n");
     printf("    -v | --verbose          Display what actions are performed.\n");
 }
 
@@ -71,7 +73,7 @@ void parse_cmdline(int argc, char **argv)
     int option_index = 0;
 
     for (;;) {
-        c = getopt_long(argc, argv, "hmvbp:l:x:s", long_options, &option_index);
+        c = getopt_long(argc, argv, "hmvbp:l:x:sw", long_options, &option_index);
         if (c == -1)
             break;
 
@@ -99,6 +101,9 @@ void parse_cmdline(int argc, char **argv)
             break;
         case 's':
             suspended = true;
+            break;
+        case 'w':
+            no_watchdog = true;
             break;
         default:
             abort();

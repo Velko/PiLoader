@@ -61,6 +61,9 @@ struct bp_hdr {
 #define BPT_EXEC    0x43455845  /* Bootloader done, start program */
 #define BPT_BEEF    0x46454542  /* Fill memory area with 0xDEADBEEF */
 
+
+#define BPF_NOWD    0x00000001  /* Disable watchdog while executing */
+
 /* Response from RasPi to PC */
 struct bp_rsp {
     uint32_t code; /* response code, see below */
