@@ -52,6 +52,7 @@ struct bp_hdr {
     uint32_t address; /* address to be loaded at */
     uint32_t size;    /* amount of bytes to be loaded */
     uint32_t crc32;   /* checksum of data (PROGBITS only) */
+    uint32_t flags;   /* flags for operation */
 } __attribute__((packed));
 
 #define BPT_PING    0x474e4950  /* Check if bootloader is alive */
