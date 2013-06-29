@@ -3,5 +3,6 @@
 	<Workspace title="PiLoader">
 		<Project filename="raspi/raspi.cbp" />
 		<Project filename="client/bootpc.cbp" active="1" />
+		<Project filename="samplekernel/samplekernel.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>
