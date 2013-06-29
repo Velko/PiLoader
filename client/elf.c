@@ -91,10 +91,7 @@ void load_elf(uint32_t *entry_addr)
                 load_section(sh_ents[si].sh_addr, sh_ents[si].sh_offset, sh_ents[si].sh_size);
                 break;
             case SHT_NOBITS:
-                if (beef_bss)
-                    beef_section(sh_ents[si].sh_addr, sh_ents[si].sh_size);
-                else
-                    zero_section(sh_ents[si].sh_addr, sh_ents[si].sh_size);
+                zero_section(sh_ents[si].sh_addr, sh_ents[si].sh_size);
                 break;
             default:
                 vm_warn("Unknown section\n.");

@@ -52,13 +52,7 @@ void handle_load(struct bp_hdr *hdr)
 
 void handle_zero(struct bp_hdr *hdr)
 {
-    memset32((void *)hdr->address, 0, hdr->size);
-    send_response(BPR_ACK);
-}
-
-void handle_beef(struct bp_hdr *hdr)
-{
-    memset32((void *)hdr->address, 0xDEADBEEF, hdr->size);
+    memset32((void *)hdr->address, (hdr->flags & BPF_BEEF) ? 0xDEADBEEF : 0, hdr->size);
     send_response(BPR_ACK);
 }
 
@@ -107,9 +101,6 @@ int kmain(unsigned int r0, unsigned int r1, unsigned int r2)
             break;
         case BPT_ZERO:
             handle_zero(&hdr);
-            break;
-        case BPT_BEEF:
-            handle_beef(&hdr);
             break;
         case BPT_EXEC:
             handle_exec(&hdr);

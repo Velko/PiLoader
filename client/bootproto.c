@@ -111,24 +111,12 @@ void zero_section(uint32_t sh_addr, uint32_t sh_size)
     phdr.address = sh_addr & 0xfffffff;
     phdr.size = sh_size;
 
-    write(ttyfd, &phdr, sizeof(phdr));
-
-    vm_print_s("ZERO %08x          %08x...", phdr.address, phdr.size);
-
-    check_response();
-}
-
-
-void beef_section(uint32_t sh_addr, uint32_t sh_size)
-{
-    struct bp_hdr phdr;
-    init_hdr(&phdr, BPT_BEEF);
-    phdr.address = sh_addr & 0xfffffff;
-    phdr.size = sh_size;
+    if (beef_bss)
+        phdr.flags |= BPF_BEEF;
 
     write(ttyfd, &phdr, sizeof(phdr));
 
-    vm_print_s("BEEF %08x          %08x...", phdr.address, phdr.size);
+    vm_print_s("%s %08x          %08x...", (beef_bss ? "BEEF" : "ZERO" ), phdr.address, phdr.size);
 
     check_response();
 }

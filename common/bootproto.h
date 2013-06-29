@@ -59,10 +59,10 @@ struct bp_hdr {
 #define BPT_LOAD    0x44414f4c  /* Load program/data     */
 #define BPT_ZERO    0x4f52455a  /* Zero memory area      */
 #define BPT_EXEC    0x43455845  /* Bootloader done, start program */
-#define BPT_BEEF    0x46454542  /* Fill memory area with 0xDEADBEEF */
 
 
 #define BPF_NOWD    0x00000001  /* Disable watchdog while executing */
+#define BPF_BEEF    0x00000002  /* Fill with 0xDEADBEEF instead of zeroing */
 
 /* Response from RasPi to PC */
 struct bp_rsp {
