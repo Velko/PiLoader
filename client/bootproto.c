@@ -39,7 +39,7 @@ static void check_response()
         vm_print_e(false, "OK\n");
         return;
     case BPR_ERR:
-        vm_print_e(true, "ERR\n");
+        vm_print_e(true, "ERR %x\n", rsp.data);
         break;
     default:
         vm_print_e(true, "Unknown response\n");
@@ -72,7 +72,7 @@ void ping()
     if (rsp.code == BPR_RDY) {
         vm_print_e(false, "OK\n");
     } else {
-        vm_print_e(true, "ERROR\n");
+        vm_print_e(true, "ERROR %x\n", rsp.data);
         exit(1);
     }
 }

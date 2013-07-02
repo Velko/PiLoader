@@ -67,12 +67,14 @@ struct bp_hdr {
 /* Response from RasPi to PC */
 struct bp_rsp {
     uint32_t code; /* response code, see below */
+    uint32_t data; /* additional data for diagnostics */
 };
 
 #define BPR_RDY       0x0a594452  /* ready to receive data */
 #define BPR_ACK       0x0a4b4341  /* packet received and verified */
 #define BPR_ERR       0x0a525245  /* packet received but failed */
 
+#define BPE_CRC       0x00000001  /* CRC error */
 
 #define BLD_MAGIC     0x4c425052  /* bootloader "magic" */
 

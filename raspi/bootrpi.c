@@ -32,10 +32,11 @@ unsigned int saved_r2;
 
 void start_kernel(unsigned int r0, unsigned int r1, unsigned int r2, void *address) __attribute__((noreturn));
 
-void send_response(uint32_t code)
+void send_response(uint32_t code, uint32_t data)
 {
     struct bp_rsp rsp;
     rsp.code = code;
+    rsp.data = data;
     kwrite(&pc_io, &rsp, sizeof(rsp));
 }
 
@@ -43,17 +44,19 @@ void handle_load(struct bp_hdr *hdr)
 {
     kread(&pc_io, (void *)hdr->address, hdr->size);
 
-    if (crc32(0, (const void *)hdr->address, hdr->size) == hdr->crc32) {
-        send_response(BPR_ACK);
+    uint32_t c_crc = crc32(0, (const void *)hdr->address, hdr->size);
+
+    if (c_crc == hdr->crc32) {
+        send_response(BPR_ACK, 0);
     } else {
-        send_response(BPR_ERR);
+        send_response(BPR_ERR, BPE_CRC);
     }
 }
 
 void handle_zero(struct bp_hdr *hdr)
 {
     memset32((void *)hdr->address, (hdr->flags & BPF_BEEF) ? 0xDEADBEEF : 0, hdr->size);
-    send_response(BPR_ACK);
+    send_response(BPR_ACK, 0);
 }
 
 void handle_exec(struct bp_hdr *hdr)
@@ -76,7 +79,7 @@ void handle_unknown(struct bp_hdr *hdr)
      */
     timer_delay(100000); // 0.1 seconds should be enough
     uart_drain_rx();
-    send_response(BPR_ERR);
+    send_response(BPR_ERR, hdr->p_type);
 }
 
 void pc_io_init()
@@ -111,7 +114,7 @@ int kmain(unsigned int r0, unsigned int r1, unsigned int r2)
 
         switch (hdr.p_type) {
         case BPT_PING:
-            send_response(BPR_RDY);
+            send_response(BPR_RDY, 0);
             break;
         case BPT_LOAD:
             handle_load(&hdr);
