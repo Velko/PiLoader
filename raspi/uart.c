@@ -77,3 +77,9 @@ unsigned long uart_drain_rx()
 
     return t;
 }
+
+void uart_waitidle()
+{
+    /* Wait until the FIFO is clear and UART has finished with last byte. */
+    while ( (UART0_FR & UART0_FR_TXFE ) == 0 || (UART0_FR & UART0_FR_BUSY));
+}

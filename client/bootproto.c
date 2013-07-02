@@ -131,7 +131,9 @@ void exec_program(uint32_t e_entry)
     if (no_watchdog)
         phdr.flags |= BPF_NOWD;
 
-    vm_print_e(false, "EXEC %08x%s\n", phdr.address, (no_watchdog ? " nwd" : ""));
+    vm_print_e(false, "EXEC %08x%s...", phdr.address, (no_watchdog ? " nwd" : ""));
 
     write(ttyfd, &phdr, sizeof(phdr));
+
+    check_response();
 }

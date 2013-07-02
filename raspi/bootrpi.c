@@ -63,6 +63,8 @@ void handle_exec(struct bp_hdr *hdr)
 {
     if ((hdr->flags & BPF_NOWD) == 0)
         wdog_start(0xFFFFF);
+    send_response(BPR_ACK, 0);
+    uart_waitidle();
     start_kernel(saved_r0, saved_r1, saved_r2, (void *)hdr->address);
 }
 
