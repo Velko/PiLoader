@@ -63,6 +63,22 @@ void handle_exec(struct bp_hdr *hdr)
     start_kernel(saved_r0, saved_r1, saved_r2, (void *)hdr->address);
 }
 
+void handle_unknown(struct bp_hdr *hdr)
+{
+    /* There's one tricky cause for unknown commands: UART missed
+     * a byte for some reason and software now is out of sync from
+     * data flow. To make things worse, this error handler is called
+     * while out-of-sync data is still coming in.
+     *
+     * To correct this we should wait a little, so the data flow stops.
+     * And then throw it all away. The current operation will, of course,
+     * fail but bootloader returns to good state.
+     */
+    timer_delay(100000); // 0.1 seconds should be enough
+    uart_drain_rx();
+    send_response(BPR_ERR);
+}
+
 void pc_io_init()
 {
     pc_io.getc = &uart_getc;
@@ -107,7 +123,7 @@ int kmain(unsigned int r0, unsigned int r1, unsigned int r2)
             handle_exec(&hdr);
             return 0;
         default:
-            send_response(BPR_ERR);
+            handle_unknown(&hdr);
             break;
         }
     }

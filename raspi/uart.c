@@ -61,3 +61,19 @@ void uart_putc(char c)
     /* Put character there */
     UART0_DR = c;
 }
+
+unsigned long uart_drain_rx()
+{
+    unsigned long t = 0;
+
+    /* Need to read from UART until it becomes empty.
+
+       The tricky part is that we need to read from UART0_DR,
+       but have no use for the value. To be sure nothing optimizes
+       away, we will calculate some meaningless value and return it.
+     */
+    while ((UART0_FR & UART0_FR_RXFE) == 0)
+        t += UART0_DR;
+
+    return t;
+}
