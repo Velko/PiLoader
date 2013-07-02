@@ -32,8 +32,6 @@ struct FILE {
     char (*getc)();
 };
 
-extern struct FILE stdio;
-
 int kread(struct FILE *file, void *buffer, int size);
 int kwrite(struct FILE *file, void *buffer, int size);
 void *memset32(void *ptr, uint32_t value, size_t bytes);

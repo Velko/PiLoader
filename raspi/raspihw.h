@@ -35,7 +35,6 @@ void uart_putc(char c);
 char uart_getc();
 unsigned long uart_drain_rx();
 void uart_waitidle();
-void uart_set_stdio();
 
 void wdog_start(unsigned int timeout);
 unsigned int wdog_get_remaining();

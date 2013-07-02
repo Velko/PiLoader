@@ -33,7 +33,10 @@ SECTIONS
     .text :
     {
         *(.text*)
-        *(.rodata*)
+    }
+    .rodata :
+    {
+       *(.rodata*)
     }
     .data :
     {
@@ -44,5 +47,5 @@ SECTIONS
         *(.bss*)
     }
     loaded_text_start = load_addr + SIZEOF(.startup);
-    loaded_end = loaded_text_start + SIZEOF(.text) + SIZEOF(.data) + SIZEOF(.bss);
+    loaded_end = loaded_text_start + SIZEOF(.text) + SIZEOF(.rodata) + SIZEOF(.data) + SIZEOF(.bss);
 }
