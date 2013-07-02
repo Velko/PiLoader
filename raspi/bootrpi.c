@@ -82,6 +82,7 @@ int kmain(unsigned int r0, unsigned int r1, unsigned int r2)
     okled_init();
     uart_init();
     pc_io_init();
+    timer_init();
 
     wdog_stop();
 

@@ -19,28 +19,17 @@
  * THE SOFTWARE.
  */
 
-#ifndef _RASPI_HW_H_
-#define _RASPI_HW_H_
+#include "raspihw.h"
+#include "bcm2835.h"
 
-#include <stdbool.h>
-#include <stdint.h>
-#include <stddef.h>
-#include <stdarg.h>
+void timer_init()
+{
+    ARM_TIMER_CTL = 0x00F90000;
+    ARM_TIMER_CTL = 0x00F90200;
+}
 
-void okled_init();
-void okled_switch(bool on);
-
-void uart_init();
-void uart_putc(char c);
-char uart_getc();
-void uart_waitidle();
-void uart_set_stdio();
-
-void wdog_start(unsigned int timeout);
-unsigned int wdog_get_remaining();
-void wdog_stop();
-
-void timer_init();
-void timer_delay(uint32_t micros);
-
-#endif
+void timer_delay(uint32_t micros)
+{
+     uint32_t prev_cnt  = ARM_TIMER_CNT;
+     while ((ARM_TIMER_CNT-prev_cnt) < micros);
+}

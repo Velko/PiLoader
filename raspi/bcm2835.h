@@ -76,6 +76,10 @@
 #define PM_RSTC_RESET               0x00000102
 
 
+/* Timer */
+#define ARM_TIMER_BASE      BCM2835_IO_BASE + 0x0000B400
+#define ARM_TIMER_CTL       _SFR_IO32(ARM_TIMER_BASE + 0x08)
+#define ARM_TIMER_CNT       _SFR_IO32(ARM_TIMER_BASE + 0x20)
 
 
 #endif // _BCM2835_H_
