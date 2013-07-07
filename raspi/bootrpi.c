@@ -29,6 +29,8 @@ unsigned int saved_r0;
 unsigned int saved_r1;
 unsigned int saved_r2;
 
+extern uint32_t run_addr;
+extern uint32_t run_end;
 
 void start_kernel(unsigned int r0, unsigned int r1, unsigned int r2, void *address) __attribute__((noreturn));
 
@@ -40,8 +42,28 @@ void send_response(uint32_t code, uint32_t data)
     kwrite(&pc_io, &rsp, sizeof(rsp));
 }
 
+bool validate_target_addr(uintptr_t addr, size_t size)
+{
+    uintptr_t run_s = (uintptr_t)&run_addr;
+    uintptr_t run_e = (uintptr_t)&run_end;
+    uintptr_t addr_e = addr + size;
+
+    run_s -= 4096; // stack (one page should be enough)
+
+    if (run_s <= addr && addr < run_e) return false;
+    if (run_s <= addr_e && addr_e < run_e) return false;
+
+    return true;
+}
+
 void handle_load(struct bp_hdr *hdr)
 {
+    if (!validate_target_addr(hdr->address, hdr->size))
+    {
+        send_response(BPR_ERR, BPE_OVR);
+        return;
+    }
+
     kread(&pc_io, (void *)hdr->address, hdr->size);
 
     uint32_t c_crc = crc32(0, (const void *)hdr->address, hdr->size);
@@ -55,6 +77,12 @@ void handle_load(struct bp_hdr *hdr)
 
 void handle_zero(struct bp_hdr *hdr)
 {
+    if (!validate_target_addr(hdr->address, hdr->size))
+    {
+        send_response(BPR_ERR, BPE_OVR);
+        return;
+    }
+
     memset32((void *)hdr->address, (hdr->flags & BPF_BEEF) ? 0xDEADBEEF : 0, hdr->size);
     send_response(BPR_ACK, 0);
 }

@@ -75,6 +75,7 @@ struct bp_rsp {
 #define BPR_ERR       0x0a525245  /* packet received but failed */
 
 #define BPE_CRC       0x00000001  /* CRC error */
+#define BPE_OVR       0x00000002  /* Bootloader overwrite */
 
 #define BLD_MAGIC     0x4c425052  /* bootloader "magic" */
 

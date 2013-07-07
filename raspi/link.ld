@@ -48,4 +48,5 @@ SECTIONS
     }
     loaded_text_start = load_addr + SIZEOF(.startup);
     loaded_end = loaded_text_start + SIZEOF(.text) + SIZEOF(.rodata) + SIZEOF(.data) + SIZEOF(.bss);
+    run_end = run_addr  + SIZEOF(.text) + SIZEOF(.rodata) + SIZEOF(.data) + SIZEOF(.bss);
 }
