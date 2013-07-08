@@ -69,37 +69,31 @@ void load_elf(uint32_t *entry_addr)
 {
     validate_elf(&e_hdr);
 
-    if (e_hdr.e_shentsize != sizeof(Elf32_Shdr)) {
-        vm_fail("TODO: implement different shentsize\n");
+    if (e_hdr.e_phentsize != sizeof(Elf32_Phdr)) {
+        vm_fail("TODO: implement different phentsize\n");
     }
 
-
-    Elf32_Shdr *sh_ents = malloc(e_hdr.e_shnum * sizeof(Elf32_Shdr));
-    if (sh_ents == NULL) {
+    Elf32_Phdr *ph_ents = malloc(e_hdr.e_phnum * sizeof(Elf32_Phdr));
+    if (ph_ents == NULL) {
         vm_fail("Out of memory or something\n");
     }
 
-    fseek(ufile, e_hdr.e_shoff, SEEK_SET);
+    fseek(ufile, e_hdr.e_phoff, SEEK_SET);
+    fread(ph_ents, sizeof(Elf32_Phdr), e_hdr.e_phnum, ufile);
 
-    fread(sh_ents, sizeof(Elf32_Shdr), e_hdr.e_shnum, ufile);
+    unsigned pi;
+    for (pi = 0; pi < e_hdr.e_phnum; pi++) {
 
-    unsigned si;
-    for (si = 0; si < e_hdr.e_shnum; si++) {
-        if (sh_ents[si].sh_flags & SHF_ALLOC) {
-            switch (sh_ents[si].sh_type) {
-            case SHT_PROGBITS:
-                load_section(sh_ents[si].sh_addr, sh_ents[si].sh_offset, sh_ents[si].sh_size);
-                break;
-            case SHT_NOBITS:
-                zero_section(sh_ents[si].sh_addr, sh_ents[si].sh_size);
-                break;
-            default:
-                vm_warn("Unknown section\n.");
+        if (ph_ents[pi].p_type == PT_LOAD) {
+            load_section(ph_ents[pi].p_paddr, ph_ents[pi].p_offset, ph_ents[pi].p_filesz);
+            uint32_t z_size = ph_ents[pi].p_memsz - ph_ents[pi].p_filesz;
+            if (z_size > 0) {
+                zero_section(ph_ents[pi].p_paddr + ph_ents[pi].p_filesz, z_size);
             }
         }
     }
 
-    free(sh_ents);
+    free(ph_ents);
 
     *entry_addr = e_hdr.e_entry;
 }

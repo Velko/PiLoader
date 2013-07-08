@@ -89,7 +89,7 @@ void load_section(uint32_t sh_addr, uint32_t sh_offset, uint32_t sh_size)
     fread(sdata, sh_size, 1, ufile);
 
     init_hdr(&phdr, BPT_LOAD);
-    phdr.address = sh_addr & 0xfffffff;
+    phdr.address = sh_addr;
     phdr.size = sh_size;
     phdr.crc32 = crc32(0, sdata, sh_size);
 
@@ -108,7 +108,7 @@ void zero_section(uint32_t sh_addr, uint32_t sh_size)
 {
     struct bp_hdr phdr;
     init_hdr(&phdr, BPT_ZERO);
-    phdr.address = sh_addr & 0xfffffff;
+    phdr.address = sh_addr;
     phdr.size = sh_size;
 
     if (beef_bss)
