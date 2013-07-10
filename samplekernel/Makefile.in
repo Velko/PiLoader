@@ -19,27 +19,23 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-# Architecture and toolchain path
-PREFIX=/usr/local/cross/bin/
-ARCH=arm-elf-eabi-
-
 # Compilation flags and additional include directories
-ASMFLAGS=-g
+ASFLAGS=-g
 CFLAGS=-g -Wall -Werror -ffreestanding -nostdlib -nostartfiles
 INCLUDES=-I../common
 
 # Toolchain executables and GCC support library
-CC=$(PREFIX)$(ARCH)gcc
-ASM=$(PREFIX)$(ARCH)gcc
-LD=$(PREFIX)$(ARCH)ld
-OBJCOPY=$(PREFIX)$(ARCH)objcopy
+CC=@CC@
+AS=@AS@
+LD=@LD@
+OBJCOPY=@OBJCOPY@
 GCCLIB:=$(shell $(CC) -print-libgcc-file-name)
 LIBS:=
 
 # Search for all .S and .c files. Calculate names of appropriate .o files
-ASMFILES := $(wildcard *.S)
+ASFILES := $(wildcard *.S)
 CFILES := $(wildcard *.c)
-ASMOBJS := $(patsubst %.S,%.o,$(ASMFILES))
+ASOBJS := $(patsubst %.S,%.o,$(ASFILES))
 COBJS := $(patsubst %.c,%.o,$(CFILES))
 EXTRAOBJS :=
 
@@ -48,15 +44,15 @@ all: kernel.img
 
 # Rules how to compile .S and .c files
 %.o: %.S
-	$(ASM) -c $(ASMFLAGS) $< -o $@
+	$(AS) -c $(ASFLAGS) $< -o $@
 
 %.o: %.c
 	$(CC) -c $(INCLUDES) $(CFLAGS) $< -o $@
 
 # Link object files into kernel executable
-kernel.elf: $(ASMOBJS) $(COBJS) $(EXTRAOBJS) link.ld
+kernel.elf: $(ASOBJS) $(COBJS) $(EXTRAOBJS) link.ld
 	$(LD) -n -T link.ld --oformat elf32-littlearm -o $@ \
-		$(ASMOBJS) $(COBJS) $(EXTRAOBJS) $(LIBS) $(GCCLIB)
+		$(ASOBJS) $(COBJS) $(EXTRAOBJS) $(LIBS) $(GCCLIB)
 
 # Convert kernel into flat-binary format, to be copied onto SD card
 kernel.img: kernel.elf
@@ -65,4 +61,4 @@ kernel.img: kernel.elf
 
 # Cleanup directory from build files
 clean:
-	/bin/rm -f *~ *.o kernel.elf kernel.img
+	$(RM) -f *~ *.o kernel.elf kernel.img

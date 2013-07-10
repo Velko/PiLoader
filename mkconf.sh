@@ -8,3 +8,6 @@ autoconf
 
 cd ../raspi
 autoconf
+
+cd ../samplekernel
+autoconf
