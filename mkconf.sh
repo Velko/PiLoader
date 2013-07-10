@@ -5,3 +5,6 @@ aclocal
 automake --add-missing --copy
 automake
 autoconf
+
+cd ../raspi
+autoconf
