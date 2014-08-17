@@ -108,13 +108,47 @@ If the kernel is finished everything it intended, and if it did not ruin the mem
 bootloader is located it may simply jump back to the bootloader's entry point.
 
 
+Intelligent upload
+------------------
+Kernel file to load sometimes can grow quite large. Often it does not contain any useful code or data
+but is just padded with zeros to certain alignment. When loading ELF files, they are already optimized
+to exclude such parts. The story is different when loading binary files. They are just a "stream of bytes"
+none of which makes any sense to naive loader.
+
+More intelligent loader (which PiLoader is as of recently) can look for big chunks of zeros in binary
+streams and upload them using special command to receiver. In other words: instead of sending, say, 16 KiB
+worth of zeros, it sends a message saying "and now insert 16 KiB of zeros".
+
+
 Installation and usage
 ======================
 
-Build Raspi part and copy *kernel.img* to the SD card, replacing whatever kernel was there before. You 
-might want to make backup first, trough.
+Clone a Git repo or download and unpack tarball.
 
-Build client part on any Linux computer, copy *piboot* to convenient location.
+Server
+------
+Server part should be compiled using **ARM cross-compiler** for Raspberry Pi and installed on the SD card.
+
+    cd raspi
+    ./configure --host=arm-elf-eabi
+    make
+
+Now take a SD card with Raspberry Pi bootloader on it and copy *kernel.img* there. You can re-use a card with
+any official Linux distro image (Raspbian for example) if you do not know how to make an empty one. You might 
+want to make backup (copy/rename) of existing *kernel.img* there first, if you plan to return to that later.
+
+A note about cross-compiler: yes you need to acquire one. But if you're into low level development, you should
+already know that. The recommended way is to [build one](http://velkoraspi.blogspot.com/2012/08/the-toolchain.html).
+
+
+Client
+------
+Client part should be compiled a regular compiler on a computer you intend to use.
+
+    cd client
+    ./configure
+    make
+    sudo make install
 
 Connect your Raspi using appropiate serial adapter to computer and power it on.
 
@@ -122,13 +156,21 @@ Run *piboot* specifying port and kernel image to load. For example:
 
     piboot -p /dev/ttyUSB0 -m kernel.elf
 
-Enjoy!
 
+Sample kernel
+-------------
+Sample kernel is provided to quickly check if everything works. It should be compiled using **ARM cross-compiler**. Similarly
+to Server:
+
+    cd samplekernel
+    ./configure --host=arm-elf-eabi
+    make
+
+Now, try to upload it on Raspberry Pi using *piboot*. It should respond with *"Hello, World!"* and then return to bootloader.
 
 
 Planned features and updates
 ============================
 * 2-way monitor;
-* Loading using ELF LMA addresses (instead of VMA);
 * More samples and documentation;
 * ...
