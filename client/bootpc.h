@@ -61,4 +61,10 @@ extern uint32_t e_load;
 extern bool suspended;
 extern bool no_watchdog;
 
+struct bin_part
+{
+    void *addr;
+    size_t size;
+};
+
 #endif // _BOOTPC_H_
