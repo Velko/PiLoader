@@ -36,6 +36,7 @@ void monitor();
 
 void ping();
 void load_section(uint32_t sh_addr, uint32_t sh_offset, uint32_t sh_size);
+void load_buffer(uint32_t sh_addr, void *sdata, uint32_t sh_size);
 void zero_section(uint32_t sh_addr, uint32_t sh_size);
 void exec_program(uint32_t e_entry);
 

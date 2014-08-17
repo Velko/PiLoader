@@ -77,17 +77,9 @@ void ping()
     }
 }
 
-
-void load_section(uint32_t sh_addr, uint32_t sh_offset, uint32_t sh_size)
+void load_buffer(uint32_t sh_addr, void *sdata, uint32_t sh_size)
 {
     struct bp_hdr phdr;
-    void *sdata = malloc(sh_size);
-    if (sdata == NULL) {
-        vm_fail("Out of memory or something.\n");
-    }
-    fseek(ufile, sh_offset, SEEK_SET);
-    fread(sdata, sh_size, 1, ufile);
-
     init_hdr(&phdr, BPT_LOAD);
     phdr.address = sh_addr;
     phdr.size = sh_size;
@@ -96,11 +88,23 @@ void load_section(uint32_t sh_addr, uint32_t sh_offset, uint32_t sh_size)
     write(ttyfd, &phdr, sizeof(phdr));
     write(ttyfd, sdata, sh_size);
 
-    vm_print_s("LOAD %08x %08x %08x...", phdr.address, sh_offset, phdr.size);
+    check_response();
+}
+
+void load_section(uint32_t sh_addr, uint32_t sh_offset, uint32_t sh_size)
+{
+    void *sdata = malloc(sh_size);
+    if (sdata == NULL) {
+        vm_fail("Out of memory or something.\n");
+    }
+    fseek(ufile, sh_offset, SEEK_SET);
+    fread(sdata, sh_size, 1, ufile);
+
+    vm_print_s("LOAD %08x %08x %08x...", sh_addr, sh_offset, sh_size);
+
+    load_buffer(sh_addr, sdata, sh_size);
 
     free(sdata);
-
-    check_response();
 }
 
 
