@@ -1,4 +1,4 @@
-/* Copyright (c) 2013 Jurģis Brigmanis
+/* Copyright (c) 2013-2016 Jurģis Brigmanis
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,25 +19,32 @@
  * THE SOFTWARE.
  */
 
-#ifndef _BCM2835_H_
-#define _BCM2835_H_
+#ifndef _BCM283X_H_
+#define _BCM283X_H_
 
 #include <stdint.h>
+#include "config.h"
 
 /* Base macros for accessing special function registers. */
 #define _SFR_IO32(io_addr)  (*((volatile unsigned long *)(io_addr)))
 
-#define BCM2835_IO_BASE     0x20000000
+#ifdef TARGET_BOARD_RPI
+#define BCM283X_IO_BASE     0x20000000
+#endif
+
+#ifdef TARGET_BOARD_RPI2
+#define BCM283X_IO_BASE     0x3F000000
+#endif
 
 /* Defines to access GPIO registers. */
-#define BCM2835_GPIO_BASE   BCM2835_IO_BASE + 0x00200000
+#define BCM283X_GPIO_BASE   BCM283X_IO_BASE + 0x00200000
 
-#define GPFSEL1    _SFR_IO32(BCM2835_GPIO_BASE + 0x04)
-#define GPFSET0    _SFR_IO32(BCM2835_GPIO_BASE + 0x1C)
-#define GPFCLR0    _SFR_IO32(BCM2835_GPIO_BASE + 0x28)
+#define GPFSEL1    _SFR_IO32(BCM283X_GPIO_BASE + 0x04)
+#define GPFSET0    _SFR_IO32(BCM283X_GPIO_BASE + 0x1C)
+#define GPFCLR0    _SFR_IO32(BCM283X_GPIO_BASE + 0x28)
 
-#define GPPUD       _SFR_IO32(BCM2835_GPIO_BASE + 0x94)
-#define GPPUDCLK0   _SFR_IO32(BCM2835_GPIO_BASE + 0x98)
+#define GPPUD       _SFR_IO32(BCM283X_GPIO_BASE + 0x94)
+#define GPPUDCLK0   _SFR_IO32(BCM283X_GPIO_BASE + 0x98)
 
 #define FSEL14OFF  12
 #define FSEL15OFF  15
@@ -47,7 +54,7 @@
 
 
 /* UART0 */
-#define UART0_BASE   BCM2835_IO_BASE + 0x00201000
+#define UART0_BASE   BCM283X_IO_BASE + 0x00201000
 
 #define UART0_DR     _SFR_IO32(UART0_BASE+0x00)
 #define UART0_FR     _SFR_IO32(UART0_BASE+0x18)
@@ -64,9 +71,9 @@
 
 
 /* WatchDog */
-#define BCM2835_PM_BASE   BCM2835_IO_BASE + 0x00100000
-#define PM_RSTC         _SFR_IO32(BCM2835_PM_BASE + 0x1c)
-#define PM_WDOG         _SFR_IO32(BCM2835_PM_BASE + 0x24)
+#define BCM283X_PM_BASE   BCM283X_IO_BASE + 0x00100000
+#define PM_RSTC         _SFR_IO32(BCM283X_PM_BASE + 0x1c)
+#define PM_WDOG         _SFR_IO32(BCM283X_PM_BASE + 0x24)
 
 #define PM_PASSWORD         0x5a000000
 #define PM_WDOG_TIME_MASK   0x000fffff
@@ -77,9 +84,8 @@
 
 
 /* Timer */
-#define ARM_TIMER_BASE      BCM2835_IO_BASE + 0x0000B400
+#define ARM_TIMER_BASE      BCM283X_IO_BASE + 0x0000B400
 #define ARM_TIMER_CTL       _SFR_IO32(ARM_TIMER_BASE + 0x08)
 #define ARM_TIMER_CNT       _SFR_IO32(ARM_TIMER_BASE + 0x20)
 
-
-#endif // _BCM2835_H_
+#endif // _BCM283X_H_

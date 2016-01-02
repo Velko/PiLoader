@@ -15,6 +15,25 @@ AC_CHECK_TOOL(OBJCOPY, objcopy, objcopy)
 AC_CHECK_PROG(CAT, cat, cat)
 AC_CHECK_PROG(RM, rm, rm)
 
+# Target board selection
+AC_ARG_ENABLE(rpi,
+	AS_HELP_STRING([--enable-rpi], "Configure for original Raspberry Pi (BCM2835-based)"),
+        [target_board=rpi,
+	 AC_DEFINE([TARGET_BOARD_RPI], [1], [Target board is original RPi])
+	])
+
+AC_ARG_ENABLE(rpi2,
+	AS_HELP_STRING([--enable-rpi2], "Configure for Raspberry Pi 2 (BCM2836-based)"),
+	[target_board=rpi2,
+	 AC_DEFINE([TARGET_BOARD_RPI2], [1], [Target board is RPi 2])
+	])
+
+
+AS_IF([test "x$target_board" != x],
+         [],
+         AC_MSG_FAILURE("Target board (RPi or RPi2) must be selected. Use --enable-xx option.")
+     )
+
 # Checks for libraries.
 
 # Checks for header files.
