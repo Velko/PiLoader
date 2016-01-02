@@ -23,11 +23,18 @@
 #define _BCM283X_H_
 
 #include <stdint.h>
+#include "config.h"
 
 /* Base macros for accessing special function registers. */
 #define _SFR_IO32(io_addr)  (*((volatile unsigned long *)(io_addr)))
 
+#ifdef TARGET_BOARD_RPI
 #define BCM283X_IO_BASE     0x20000000
+#endif
+
+#ifdef TARGET_BOARD_RPI2
+#define BCM283X_IO_BASE     0x3F000000
+#endif
 
 /* Defines to access GPIO registers. */
 #define BCM283X_GPIO_BASE   BCM283X_IO_BASE + 0x00200000

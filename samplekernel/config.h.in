@@ -50,3 +50,9 @@
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
+
+/* Target board is original RPi */
+#undef TARGET_BOARD_RPI
+
+/* Target board is RPi 2 */
+#undef TARGET_BOARD_RPI2
