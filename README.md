@@ -128,9 +128,12 @@ Clone a Git repo or download and unpack tarball.
 Server
 ------
 Server part should be compiled using **ARM cross-compiler** for Raspberry Pi and installed on the SD card.
+Since original Raspberry Pi and Raspberry Pi 2 are based on slightly different SOCs (and currently there is no
+auto-detection implemented), you need to choose the target platform. Add *--enable-rpi* or *--enable-rpi2*
+options when configuring sources:
 
     cd raspi
-    ./configure --host=arm-elf-eabi
+    ./configure --host=arm-elf-eabi --enable-rpi2
     make
 
 Now take a SD card with Raspberry Pi bootloader on it and copy *kernel.img* there. You can re-use a card with
@@ -163,7 +166,7 @@ Sample kernel is provided to quickly check if everything works. It should be com
 to Server:
 
     cd samplekernel
-    ./configure --host=arm-elf-eabi
+    ./configure --host=arm-elf-eabi --enable-rpi2
     make
 
 Now, try to upload it on Raspberry Pi using *piboot*. It should respond with *"Hello, World!"* and then return to bootloader.
