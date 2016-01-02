@@ -1,4 +1,4 @@
-/* Copyright (c) 2013 Jurģis Brigmanis
+/* Copyright (c) 2013-2016 Jurģis Brigmanis
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,28 +19,28 @@
  * THE SOFTWARE.
  */
 
-#ifndef _BCM2835_H_
-#define _BCM2835_H_
+#ifndef _BCM283X_H_
+#define _BCM283X_H_
 
 #include <stdint.h>
 
 /* Base macros for accessing special function registers. */
 #define _SFR_IO32(io_addr)  (*((volatile unsigned long *)(io_addr)))
 
-#define BCM2835_IO_BASE     0x20000000
+#define BCM283X_IO_BASE     0x20000000
 
 /* Defines to access GPIO registers. */
-#define BCM2835_GPIO_BASE   BCM2835_IO_BASE + 0x00200000
+#define BCM283X_GPIO_BASE   BCM283X_IO_BASE + 0x00200000
 
-#define GPFSEL1    _SFR_IO32(BCM2835_GPIO_BASE + 0x04)
+#define GPFSEL1    _SFR_IO32(BCM283X_GPIO_BASE + 0x04)
 
-#define GPPUD       _SFR_IO32(BCM2835_GPIO_BASE + 0x94)
-#define GPPUDCLK0   _SFR_IO32(BCM2835_GPIO_BASE + 0x98)
+#define GPPUD       _SFR_IO32(BCM283X_GPIO_BASE + 0x94)
+#define GPPUDCLK0   _SFR_IO32(BCM283X_GPIO_BASE + 0x98)
 
 #define FSEL14OFF  12
 
 /* UART0 */
-#define UART0_BASE   BCM2835_IO_BASE + 0x00201000
+#define UART0_BASE   BCM283X_IO_BASE + 0x00201000
 
 #define UART0_DR     _SFR_IO32(UART0_BASE+0x00)
 #define UART0_FR     _SFR_IO32(UART0_BASE+0x18)
@@ -54,4 +54,4 @@
 #define UART0_FR_TXFF    (1 << 5)
 #define UART0_FR_BUSY    (1 << 3)
 
-#endif // _BCM2835_H_
+#endif // _BCM283X_H_
