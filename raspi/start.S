@@ -32,7 +32,7 @@ _start:
 // Absolute jump to address
 .global start_kernel
 start_kernel:
-	mov pc, r0
+	mov pc, r3
 
 .section .startup, "ax"
 .global _startup
