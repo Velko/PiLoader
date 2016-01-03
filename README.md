@@ -136,9 +136,10 @@ options when configuring sources:
     ./configure --host=arm-elf-eabi --enable-rpi2
     make
 
-Now take a SD card with Raspberry Pi bootloader on it and copy *kernel.img* there. You can re-use a card with
-any official Linux distro image (Raspbian for example) if you do not know how to make an empty one. You might 
-want to make backup (copy/rename) of existing *kernel.img* there first, if you plan to return to that later.
+Now take a SD card with Raspberry Pi bootloader on it and copy *kernel.img* (or *kernel7.img* for **Raspberry Pi 2**)
+there. You can re-use a card with any official Linux distro image (Raspbian for example) if you do not know how to
+make an empty one. You might want to make backup (copy/rename) of existing file there first, if you plan to use that
+later.
 
 A note about cross-compiler: yes you need to acquire one. But if you're into low level development, you should
 already know that. The recommended way is to [build one](http://velkoraspi.blogspot.com/2012/08/the-toolchain.html).
