@@ -2,6 +2,7 @@
 *~
 *.bin
 kernel.*
+kernel7.img
 *.layout
 *.depend
 

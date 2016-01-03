@@ -42,7 +42,7 @@ COBJS := $(patsubst %.c,%.o,$(CFILES))
 EXTRAOBJS := crc32.o
 
 # Default target
-all: kernel.img
+all: @TARGET_IMG@
 
 # Rules how to compile .S and .c files
 %.o: %.S
@@ -66,9 +66,9 @@ startup.bin: kernel.elf
 loader.bin: kernel.elf
 	$(OBJCOPY) -O binary -R .startup --set-section-flags .bss=alloc,load,contents $< $@
 
-kernel.img: startup.bin loader.bin
+@TARGET_IMG@: startup.bin loader.bin
 	$(CAT) startup.bin loader.bin > $@
 
 # Cleanup directory from build files
 clean:
-	$(RM) -f *~ *.o kernel.elf kernel.img startup.bin loader.bin
+	$(RM) -f *~ *.o kernel.elf @TARGET_IMG@ startup.bin loader.bin

@@ -20,12 +20,14 @@ AC_ARG_ENABLE(rpi,
 	AS_HELP_STRING([--enable-rpi], "Configure for original Raspberry Pi (BCM2835-based)"),
         [target_board=rpi,
 	 AC_DEFINE([TARGET_BOARD_RPI], [1], [Target board is original RPi])
+	 AC_SUBST([TARGET_IMG], [kernel.img])
 	])
 
 AC_ARG_ENABLE(rpi2,
 	AS_HELP_STRING([--enable-rpi2], "Configure for Raspberry Pi 2 (BCM2836-based)"),
 	[target_board=rpi2,
-	 AC_DEFINE([TARGET_BOARD_RPI2], [1], [Target board is RPi 2])
+	 AC_DEFINE([TARGET_BOARD_RPI2], [1], [Target board is RPi 2]),
+	 AC_SUBST([TARGET_IMG], [kernel7.img])
 	])
 
 
