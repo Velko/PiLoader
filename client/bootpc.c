@@ -63,6 +63,9 @@ int main(int argc, char **argv)
     case LACT_USAGE:
         usage();
         break;
+    case LACT_REBOOT:
+        reboot_pi();
+        break;
     }
 
     if (run_monitor)

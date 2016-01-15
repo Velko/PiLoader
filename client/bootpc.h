@@ -39,6 +39,7 @@ void load_section(uint32_t sh_addr, uint32_t sh_offset, uint32_t sh_size);
 void load_buffer(uint32_t sh_addr, void *sdata, uint32_t sh_size);
 void zero_section(uint32_t sh_addr, uint32_t sh_size);
 void exec_program(uint32_t e_entry);
+void reboot_pi(void);
 
 bool check_elf();
 void load_elf(uint32_t *entry_addr);
@@ -65,6 +66,7 @@ extern bool no_watchdog;
 #define LACT_NONE   0
 #define LACT_EXEC   1
 #define LACT_USAGE  2
+#define LACT_REBOOT 3
 
 
 struct bin_part

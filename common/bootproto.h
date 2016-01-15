@@ -43,6 +43,7 @@
 	* ZERO - <size> bytes at <address> must be zeroed.
         * BEEF - <size> bytes at <address> must be filled with 0xDEADBEEF.
 	* EXEC - start executing program at <address>
+	* REBOOT - fields other than <p_type> ignored
 */
 
 
@@ -59,6 +60,7 @@ struct bp_hdr {
 #define BPT_LOAD    0x44414f4c  /* Load program/data     */
 #define BPT_ZERO    0x4f52455a  /* Zero memory area      */
 #define BPT_EXEC    0x43455845  /* Bootloader done, start program */
+#define BPT_REBOOT  0x48939858  /* Reboot the Pi */
 
 
 #define BPF_NOWD    0x00000001  /* Disable watchdog while executing */

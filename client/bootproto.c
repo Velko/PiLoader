@@ -141,3 +141,18 @@ void exec_program(uint32_t e_entry)
 
     check_response();
 }
+
+
+void reboot_pi(void)
+{
+    struct bp_hdr phdr;
+    struct bp_rsp rsp;
+
+    init_hdr(&phdr, BPT_REBOOT);
+
+    vm_print_s("Rebooting the RasPi...");
+
+    write(ttyfd, &phdr, sizeof(phdr));
+
+    check_response();
+}

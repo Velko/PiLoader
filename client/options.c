@@ -33,6 +33,7 @@ struct option long_options[] = {
     {"exec-addr", required_argument, 0, 'x'},
     {"suspended", no_argument, 0, 's'},
     {"no-watchdog", no_argument, 0, 'w'},
+    {"reboot", no_argument, 0, 'r'},
     {0, 0, 0, 0}
 };
 
@@ -54,6 +55,7 @@ void usage(void)
     printf("    -s | --suspended        Do not start to execute right away.\n");
     printf("    -w | --no-watchdog      Disable watchdog.\n");
     printf("    -v | --verbose          Display what actions are performed.\n");
+    printf("    -r | --reboot           Reboot the Pi.\n");
 }
 
 uint32_t parse_addr(const char *s_addr)
@@ -75,7 +77,7 @@ void parse_cmdline(int argc, char **argv)
     loader_action = LACT_EXEC; // Exec by default
 
     for (;;) {
-        c = getopt_long(argc, argv, "hmvbp:l:x:sw", long_options, &option_index);
+        c = getopt_long(argc, argv, "hmvbp:l:x:swr", long_options, &option_index);
         if (c == -1)
             break;
 
@@ -107,6 +109,9 @@ void parse_cmdline(int argc, char **argv)
         case 'w':
             no_watchdog = true;
             break;
+        case 'r':
+            loader_action = LACT_REBOOT;
+            return;
         default:
             abort();
         }
