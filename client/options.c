@@ -36,7 +36,7 @@ struct option long_options[] = {
     {0, 0, 0, 0}
 };
 
-static void usage()
+void usage(void)
 {
     printf("USAGE:\n");
     printf("    piboot <options> <kernel>\n");
@@ -72,6 +72,8 @@ void parse_cmdline(int argc, char **argv)
     int c;
     int option_index = 0;
 
+    loader_action = LACT_EXEC; // Exec by default
+
     for (;;) {
         c = getopt_long(argc, argv, "hmvbp:l:x:sw", long_options, &option_index);
         if (c == -1)
@@ -79,8 +81,8 @@ void parse_cmdline(int argc, char **argv)
 
         switch (c) {
         case 'h':
-            usage();
-            exit(0);
+            loader_action = LACT_USAGE;
+            return;
         case 'm':
             run_monitor = true;
             break;
@@ -100,7 +102,7 @@ void parse_cmdline(int argc, char **argv)
             e_entry = parse_addr(optarg);
             break;
         case 's':
-            suspended = true;
+            loader_action = LACT_NONE;
             break;
         case 'w':
             no_watchdog = true;

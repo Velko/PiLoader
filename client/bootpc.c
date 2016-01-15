@@ -27,7 +27,7 @@
 FILE *ufile;
 uint32_t e_entry = 0x8000;
 uint32_t e_load  = 0x8000;
-bool suspended;
+int loader_action;
 bool no_watchdog;
 
 int main(int argc, char **argv)
@@ -55,8 +55,15 @@ int main(int argc, char **argv)
         fclose(ufile);
     }
 
-    if (!suspended)
+    switch(loader_action)
+    {
+    case LACT_EXEC:
         exec_program(e_entry);
+        break;
+    case LACT_USAGE:
+        usage();
+        break;
+    }
 
     if (run_monitor)
         monitor();

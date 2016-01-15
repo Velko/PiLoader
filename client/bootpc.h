@@ -46,6 +46,7 @@ void load_binary();
 
 void setup_serial(const char *port);
 
+void usage(void);
 void parse_cmdline(int argc, char **argv);
 
 extern bool verbose_mode;
@@ -58,8 +59,13 @@ extern bool run_monitor;
 extern char *port;
 extern uint32_t e_entry;
 extern uint32_t e_load;
-extern bool suspended;
+extern int loader_action;
 extern bool no_watchdog;
+
+#define LACT_NONE   0
+#define LACT_EXEC   1
+#define LACT_USAGE  2
+
 
 struct bin_part
 {
