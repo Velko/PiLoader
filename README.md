@@ -120,6 +120,14 @@ streams and upload them using special command to receiver. In other words: inste
 worth of zeros, it sends a message saying "and now insert 16 KiB of zeros".
 
 
+Reboot Pi on request
+--------------------
+Sometimes, while playing with hardware, just a return to bootloader is not enough. It's somewhat tainted
+environment where pheriperals are left configured from previous runs. There are some things left in memory,
+you name it. Of course you can power cycle the Pi. But now there is easier way. Just use *--reboot* switch
+with `piboot`.
+
+
 Installation and usage
 ======================
 
