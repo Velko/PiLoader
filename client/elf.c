@@ -22,6 +22,7 @@
 #include "bootpc.h"
 #include <elf.h>
 #include <stdlib.h>
+#include <string.h>
 
 Elf32_Ehdr e_hdr;
 bool beef_bss;
